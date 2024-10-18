@@ -34,3 +34,5 @@ jobs:
       KEY: ${{ secrets.KEY }}
       PORT: ${{ secrets.PORT }}
 ```
+
+- [] Make "watched branch" and environment variable
