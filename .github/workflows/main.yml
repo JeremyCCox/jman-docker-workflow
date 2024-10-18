@@ -1,6 +1,12 @@
 name: remote ssh command
 on:
   workflow_call:
+    inputs: 
+      branch:
+        description: 'Default branch to pull repository from.'
+        type: 'string'
+        default: 'release'
+        required: false
     secrets:
       HOST: 
         required: true
@@ -22,18 +28,19 @@ jobs:
         env:
           REPO:  ${{ github.repository }}
           OWNER: ${{ github.repository_owner }}
+          BRANCH: ${{ inputs.branch }}
         with:
           host: ${{ secrets.HOST }}
           username: ${{ secrets.USERNAME }}
           key: ${{ secrets.KEY }}
           port: ${{ secrets.PORT }}
-          envs: REPO, OWNER
+          envs: REPO, OWNER, BRANCH
           script:  |
             mkdir $OWNER
             cd $OWNER
             git clone https://github.com/$REPO.git
             cd ~/$REPO
-            git checkout release
+            git checkout $BRANCH
             git reset --hard HEAD
             git pull
   build:
