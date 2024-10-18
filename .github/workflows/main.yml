@@ -38,8 +38,10 @@ jobs:
     needs:  setup
     name: Build
     runs-on: ubuntu-latest
+    continue-on-error: false
     steps:
-      - name: executing remote ssh commands using key
+      - name: Building Docker Compose
+        id: build
         uses: appleboy/ssh-action@v1.1.0
         env:
           REPO: ${{ github.repository }}
@@ -56,5 +58,19 @@ jobs:
             echo "#.env" > .env.keys
             echo "DOTENV_PRIVATE_KEY=\"$DOTENV_PRIVATE_KEY\"" >> .env.keys
             docker compose build
+      - name: Executing Docker Compose 
+        if: steps.build.outcome == 'success
+        uses: appleboy/ssh-action@v1.1.0
+        env:
+          REPO: ${{ github.repository }}
+          DOTENV_PRIVATE_KEY: ${{secrets.DOTENV_PRIVATE_KEY }}
+        with:
+          host: ${{ secrets.HOST }}
+          username: ${{ secrets.USERNAME }}
+          key: ${{ secrets.KEY }}
+          port: ${{ secrets.PORT }}
+          envs: REPO, DOTENV_PRIVATE_KEY
+          script: |
+            cd ~/$REPO
             docker compose down
-            docker compose up -d
+            docker compose up
