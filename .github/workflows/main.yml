@@ -59,7 +59,7 @@ jobs:
             echo "DOTENV_PRIVATE_KEY=\"$DOTENV_PRIVATE_KEY\"" >> .env.keys
             docker compose build
       - name: Executing Docker Compose 
-        if: steps.build.outcome == 'success
+        if: steps.build.outcome == 'success'
         uses: appleboy/ssh-action@v1.1.0
         env:
           REPO: ${{ github.repository }}
