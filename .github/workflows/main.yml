@@ -33,6 +33,8 @@ jobs:
             cd $OWNER
             git clone https://github.com/$REPO.git
             cd ~/$REPO
+            git checkout release
+            git reset --hard HEAD
             git pull
   build:
     needs:  setup
@@ -54,7 +56,6 @@ jobs:
           envs: REPO, DOTENV_PRIVATE_KEY
           script: |
             cd ~/$REPO
-            git checkout release
             echo "#.env" > .env.keys
             echo "DOTENV_PRIVATE_KEY=\"$DOTENV_PRIVATE_KEY\"" >> .env.keys
             docker compose build
@@ -73,4 +74,4 @@ jobs:
           script: |
             cd ~/$REPO
             docker compose down
-            docker compose up
+            docker compose up -d
